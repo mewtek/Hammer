@@ -1,0 +1,8 @@
+# Visual Studio Code generated files
+.vscode/
+
+# Real .env configuration for the bot
+.env
+
+# Python Virtual Environment
+.venv/
