@@ -25,6 +25,12 @@ async def add_guild_to_database(guild_id: int, guild_name: str):
 
     db = await asyncpg.connect(**PSQL_INFO)
 
+    # asyncpg throws an error if the server is aleady in the database
+    existing_guild = await db.fetchrow('''SELECT * FROM guild WHERE guild_id = $1''', guild_id)
+    if existing_guild is not None:
+        db.close()
+        return
+    
     await db.execute('''INSERT INTO guild(guild_id, guild_name) VALUES($1, $2)''',
                     guild_id, guild_name)
     
@@ -43,10 +49,14 @@ async def add_user_to_database(user_id: int, username: str):
         username (str): The user's username
     """
 
-    # TODO: Check if the user is already in the database.
-
     db = await asyncpg.connect(**PSQL_INFO)
 
+    # asyncpg throws an error if the user is already in the database
+    existing_user = await db.fetchrow('''SELECT * FROM "user" WHERE user_id = $1''', user_id)
+    if existing_user is not None:
+        await db.close()
+        return
+    
     await db.execute('''INSERT INTO "user"(user_id, username) VALUES($1, $2)''', user_id, username)
 
     await db.close()
