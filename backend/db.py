@@ -5,13 +5,13 @@ import asyncpg
 from datetime import datetime
 import os
 
-psql_server_addr = "postgresql://{0}@{1}:{2}/{3}".format(
-        os.getenv("PSQL_USER"),
-        os.getenv("PSQL_ADDR"), os.getenv("PSQL_PORT"),
-        os.getenv("PSQL_DB")
-)
-
-psql_password = os.getenv("PSQL_PASSWD")
+PSQL_INFO = {
+    'host': os.getenv('PSQL_ADDR'),
+    'port': os.getenv('PSQL_PORT'),
+    'database': os.getenv('PSQL_DB'),
+    'user': os.getenv('PSQL_USER'),
+    'password': os.getenv('PSQL_PASSWD')
+}
 
 async def add_guild_to_database(guild_id: int, guild_name: str):
     """
@@ -23,7 +23,7 @@ async def add_guild_to_database(guild_id: int, guild_name: str):
         guild_name (str): Name of the Discord server
     """
 
-    db = await asyncpg.connect(psql_server_addr, password=psql_password)
+    db = await asyncpg.connect(**PSQL_INFO)
 
     await db.execute('''INSERT INTO guild(guild_id, guild_name) VALUES($1, $2)''',
                     guild_id, guild_name)
@@ -45,7 +45,7 @@ async def add_user_to_database(user_id: int, username: str):
 
     # TODO: Check if the user is already in the database.
 
-    db = await asyncpg.connect(psql_server_addr, password=psql_password)
+    db = await asyncpg.connect(**PSQL_INFO)
 
     await db.execute('''INSERT INTO "user"(user_id, username) VALUES($1, $2)''', user_id, username)
 
@@ -65,7 +65,7 @@ async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int
         guild_id (int): ID of the Discord server that the warning was issued in
     """
 
-    db = await asyncpg.connect(psql_server_addr, password=psql_password)
+    db = await asyncpg.connect(**PSQL_INFO)
     time_issued = datetime.utcnow()
     
     await db.execute('''INSERT INTO "warning"(issued, reason, issued_by, issued_to, issued_guild) VALUES($1, $2, $3, $4, $5)''',
