@@ -1,3 +1,5 @@
+"""Backend communication between Hammmer and the PostgreSQL database."""
+
 import asyncio
 import asyncpg
 from datetime import datetime
@@ -12,7 +14,14 @@ psql_server_addr = "postgresql://{0}@{1}:{2}/{3}".format(
 psql_password = os.getenv("PSQL_PASSWD")
 
 async def add_guild_to_database(guild_id: int, guild_name: str):
-    """ Add a recently joined guild to the database. Should be ran upon server join. """
+    """
+    Creates an entry for a Discord server, as well as an entry for its settings.
+    Typically ran when the bot joins a new server.
+
+    Args:
+        guild_id (int): ID of the Discord server
+        guild_name (str): Name of the Discord server
+    """
 
     db = await asyncpg.connect(psql_server_addr, password=psql_password)
 
@@ -26,7 +35,13 @@ async def add_guild_to_database(guild_id: int, guild_name: str):
     print(f"Successfully added {guild_name} ({guild_id}) to database")
 
 async def add_user_to_database(user_id: int, username: str):
-    """ Adds a user to the user table. Should be ran on issuance of an administrative command (ban, kick, etc.) """
+    """
+    Adds a user to the user table. Should be ran on issuance of an administrative command (ban, kick, etc.) 
+
+    Args:
+        user_id (int): ID of the user
+        username (str): The user's username
+    """
 
     # TODO: Check if the user is already in the database.
 
@@ -40,7 +55,15 @@ async def add_user_to_database(user_id: int, username: str):
 
 
 async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int):
+    """
+    Adds an issued warning to the database
 
+    Args:
+        reason (str): Reason for the warning being issued
+        issued_by (int): ID of the user that issued the warning
+        issued_to (int): ID of the user that was warned
+        guild_id (int): ID of the Discord server that the warning was issued in
+    """
 
     db = await asyncpg.connect(psql_server_addr, password=psql_password)
     time_issued = datetime.utcnow()
