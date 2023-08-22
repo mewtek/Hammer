@@ -39,5 +39,20 @@ async def shutdown(ctx: commands.Context):
     print(f"Bot shut down by {ctx.message.author.id}..")
     await client.close()
 
+@client.command()
+async def test_warning(ctx: commands.Context):
+    reason = "This is a test warning"
+    user_id = ctx.message.author.id
+    guild_id = ctx.message.guild.id
+
+    # await backend.db.add_user_to_database(user_id, ctx.message.author.global_name)
+    await backend.db.add_warning(reason, user_id, user_id, guild_id)
+
+    await ctx.reply(f"Code ran successfully!")
+
+@client.command()
+async def force_guild_into_db(ctx: commands.Context):
+    await backend.db.add_guild_to_database(ctx.guild.id, ctx.guild.name)
+    ctx.reply("Successfully added guild to database.")
 
 client.run(token=token)
