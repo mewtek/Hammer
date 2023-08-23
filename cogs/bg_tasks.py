@@ -7,4 +7,4 @@ class BackgroundTasks(commands.Cog):
 
 
 async def setup(bot):
-    bot.add_cog(BackgroundTasks(bot))
+    await bot.add_cog(BackgroundTasks(bot))
