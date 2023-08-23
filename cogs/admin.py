@@ -69,5 +69,32 @@ class Admin(commands.Cog):
         await ctx.message.guild.unban(user)
         await ctx.message.add_reaction(u"\u2705")
 
+    
+    @commands.command()
+    async def mute(self, ctx: commands.Context, user: discord.Member, expiration: str):
+        issued_by = ctx.message.author.id
+        issued_to = user.id
+        guild = ctx.message.guild
+        muted_role_id = await backend.db.get_muted_role_id(guild.id)
+
+        if muted_role_id == 0:
+            muted_role = await guild.create_role(
+                name = "Muted",
+                permissions = discord.Permissions(
+                    send_messages = False,
+                    request_to_speak = False,
+                    speak = False
+                    ),
+            )
+            await backend.db.set_muted_role(muted_role.id, guild.id)
+
+            muted_role_id = muted_role.id
+
+        muted_role = guild.get_role(muted_role_id)
+        await backend.db.add_mute(issued_by, issued_to, guild.id, expiration)
+        await user.add_roles(muted_role, reason=f"Muted by {ctx.message.author.id} for {expiration}")
+        await ctx.message.add_reaction(u"\u2705")
+
+
 async def setup(bot):
     await bot.add_cog(Admin(bot))
