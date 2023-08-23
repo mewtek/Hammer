@@ -9,24 +9,14 @@ import asyncio
 load_dotenv()
 token = os.getenv('BOT_TOKEN')
 
-# Set bot intents
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-intents.guild_messages = True
-
-
-# Bot setup
+intents = discord.Intents(
+    messages = True,
+    message_content = True,
+    guilds = True,
+    members = True,
+    bans = True
+)
 client = commands.Bot(command_prefix="!", intents=intents)
-
-@client.event
-async def on_ready():
-    print(f"Logged in as {client.user.name}..")
-
-@client.event
-async def on_guild_join(guild: discord.Guild):
-    print(f"Joined new guild {guild.id}.")
-    await backend.db.add_guild_to_database(guild.id, guild.name)
 
 async def load_extensions():
     for filename in os.listdir("./cogs"):
