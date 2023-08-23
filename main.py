@@ -8,8 +8,10 @@ from dotenv import load_dotenv
 
 discord.utils.setup_logging(level=logging.INFO, root=False)
 
-# Get .env variables
-load_dotenv()
+# Get environment variables
+if ".env" in os.listdir('.'):
+    load_dotenv()
+    
 token = os.getenv('BOT_TOKEN')
 
 intents = discord.Intents(
