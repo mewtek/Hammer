@@ -137,7 +137,7 @@ async def add_ban(issued_by: int, issued_to: int, guild_id: int, reason: str = N
     # A user should only be banned once per server
     ban_check = await db.fetchrow("SELECT * FROM ban WHERE issued_to = $1 AND issued_guild = $2",
                                   issued_to, guild_id)
-    if ban_check == False:
+    if ban_check is not None:
         return
 
     await db.execute('''INSERT INTO ban(issued, issued_by, issued_to, issued_guild) VALUES($1, $2, $3, $4)''',
