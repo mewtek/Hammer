@@ -1,9 +1,12 @@
 import os
 import discord
+import asyncio
+import logging
 import backend.db
 from discord.ext import commands
 from dotenv import load_dotenv
-import asyncio
+
+discord.utils.setup_logging(level=logging.INFO, root=False)
 
 # Get .env variables
 load_dotenv()
