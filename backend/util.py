@@ -24,7 +24,7 @@ def add_time(start_time: datetime, time_to_add: str) -> datetime:
 
         if unit == 'y':
             added_time = added_time + timedelta(days=amount * 365)
-        elif unit == 'n':
+        elif unit == 'M':
             added_time = added_time + timedelta(days=amount * 30)
         elif unit == 'd':
             added_time = added_time + timedelta(days=amount)
