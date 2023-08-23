@@ -56,7 +56,7 @@ async def is_guild_banned(guild_id: int) -> bool:
 
     server = await db.fetchrow("SELECT * FROM banned_guild WHERE guild_id = $1", guild_id)
     await db.close()
-    
+
     if server is not None:
         return True
     
@@ -302,3 +302,29 @@ async def remove_ban(user_id: int, guild_id: int) -> bool:
     print(f"{user_id} was unbanned from {guild_id}.")
 
     return True
+
+
+async def log_kick(issued_by: int, issued_to: int, guild_id: int, reason: str = None):
+    """
+    Logs someone being kicked from a server.
+
+    Args:
+        issued_by (int): The ID of the user that kicked a user
+        issued_to (int): The ID of the user that was kicked
+        guild_id (int): The ID of the server the kick was issued in
+        reason (str, optional): The reason for the kick. Defaults to None. 
+    """
+
+    time_issued = datetime.utcnow()
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    await db.execute('''INSERT INTO kick(issued, issued_by, issued_to, issued_guild),
+                     VALUES($1, $2, $3, $4)''', time_issued, issued_by, issued_to, guild_id)
+    
+    if reason is not None:
+        id = await db.fetchval('''SELECT id FROM kick WHERE
+                               issued_by = $1 AND issued_to = $2 AND issued_guild = $3''',
+                               issued_by, issued_to, guild_id)
+        await db.execute("UPDATE kick SET reason = $1 WHERE id = $2", reason, id)
+
+    await db.close()

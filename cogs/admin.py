@@ -69,6 +69,21 @@ class Admin(commands.Cog):
         await ctx.message.guild.unban(user)
         await ctx.message.add_reaction(u"\u2705")
 
+
+    @commands.command()
+    async def kick(self, ctx: commands.Context, user: discord.Member, reason: str = None):
+        issued_by = ctx.message.author.id
+        issued_to = user.id
+        guild_id = ctx.message.guild.id
+
+        if reason is None:
+            await backend.db.log_kick(issued_by, issued_to, guild_id)
+            await user.kick(reason=f"Kicked by {ctx.message.author.name} -- No reason provided.")
+            return
+        
+        await backend.db.log_kick(issued_by, issued_to, guild_id, reason)
+        await user.kick(reason = f"Kicked by {user.name} -- {reason}")
+
     
     @commands.command()
     async def mute(self, ctx: commands.Context, user: discord.Member, expiration: str):
