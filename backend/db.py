@@ -186,6 +186,8 @@ async def set_muted_role(role_id: int, guild_id: int):
 
     await db.execute("UPDATE guild_settings SET muted_role_id = $1 WHERE id = $2",
                      role_id, guild_id)
+    
+    await db.close()
 
 
 async def get_muted_role_id(guild_id: int) -> int:
@@ -204,6 +206,8 @@ async def get_muted_role_id(guild_id: int) -> int:
         "SELECT muted_role_id FROM guild_settings WHERE id = $1",
         guild_id
     )
+    
+    await db.close()
 
     if role_id is None:
         return 0
