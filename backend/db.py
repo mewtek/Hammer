@@ -139,18 +139,33 @@ async def add_mute(issued_by: int, issued_to: int, guild_id: int, expiration: st
                         expiration_time)
 
 
-async def remove_mute(issued_to: int, guild_id: int):
+async def remove_mute(issued_to: int, guild_id: int) -> bool:
     """
     Removes a mute from the database.
 
     Args:
         issued_to (int): The ID of the user the mute was issued to
         guild_id (int): The ID of the server the command originated from
+    
+    Returns:
+        bool: True or False depending on whether or not the removal was successful
     """
 
-    pass # TODO
+    db = await asyncpg.connect(**PSQL_INFO)
 
+    id = await db.fetchval("SELECT id FROM mute WHERE issued_to = $1 AND issued_guild = $2",
+                                issued_to, guild_id)
+    
+    if id is None:
+        await db.close()
+        return False
+    
+    await db.execute("DELETE FROM mute WHERE id = $1", id)
+    await db.close()
 
+    return True
+
+    
 async def set_muted_role(role_id: int, guild_id: int):
     """
     Sets the muted role for a server in the guild_settings table
