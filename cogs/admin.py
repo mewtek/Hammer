@@ -78,6 +78,7 @@ class Admin(commands.Cog):
         muted_role_id = await backend.db.get_muted_role_id(guild.id)
 
         if muted_role_id == 0:
+            msg = await ctx.message("No muted role found, creating one..")
             muted_role = await guild.create_role(
                 name = "Muted",
                 permissions = discord.Permissions(
@@ -102,12 +103,31 @@ class Admin(commands.Cog):
                     muted_role,
                     speak = False, request_to_speak = False
                 )
+            
+            await msg.delete()
 
         muted_role = guild.get_role(muted_role_id)
         await backend.db.add_mute(issued_by, issued_to, guild.id, expiration)
         await user.add_roles(muted_role, reason=f"Muted by {ctx.message.author.id} for {expiration}")
         await ctx.message.add_reaction(u"\u2705")
 
+
+    @commands.command()
+    async def unmute(self, ctx: commands.Context, user: discord.Member):
+        issued_to = user.id
+        guild_id = ctx.message.guild.id
+        muted_role_id = await backend.db.get_muted_role_id(guild_id)
+        muted_role = ctx.guild.get_role(muted_role_id)
+        process = await backend.db.remove_mute(issued_to, guild_id)
+
+        if process == False:
+            await ctx.reply(f"{user.name} isn't muted.")
+            return
+        
+        await user.remove_roles(muted_role, reason=f"Unmuted by {ctx.message.author.name}")
+
+        await ctx.message.add_reaction(u"\u2705")
+        
 
 async def setup(bot):
     await bot.add_cog(Admin(bot))
