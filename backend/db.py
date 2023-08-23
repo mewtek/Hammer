@@ -64,7 +64,7 @@ async def add_user_to_database(user_id: int, username: str):
     print(f"Added user {user_id} to database.")
 
 
-async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int):
+async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int) -> int:
     """
     Adds an issued warning to the database
 
@@ -73,6 +73,9 @@ async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int
         issued_by (int): ID of the user that issued the warning
         issued_to (int): ID of the user that was warned
         guild_id (int): ID of the Discord server that the warning was issued in
+
+    Returns:
+        Int containing the in-database ID of the issued warning.
     """
 
     db = await asyncpg.connect(**PSQL_INFO)
@@ -82,8 +85,9 @@ async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int
                      time_issued, reason, issued_by, issued_to, guild_id)
 
 
-    id = await db.cursor().fetch('''SELECT id FROM "warning" WHERE issued = $1 AND reason = $2 AND issued_by = $3 AND issued_to = $4 AND issued_guild = $5''',
-                          time_issued, reason, issued_by, issued_to, guild_id)
-
+    id = await db.fetchval('''SELECT id FROM "warning" WHERE reason = $1 AND issued_by = $2 AND issued_to = $3 AND issued_guild = $4''',
+                            reason, issued_by, issued_to, guild_id)
+    
     await db.close()
-    print(id)
+    
+    return id
