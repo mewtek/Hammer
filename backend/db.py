@@ -178,7 +178,7 @@ async def get_muted_role_id(guild_id: int) -> int:
     """
 
     db = await asyncpg.connect(**PSQL_INFO)
-    role_id = await db.fetchvar(
+    role_id = await db.fetchval(
         "SELECT muted_role_id FROM guild_settings WHERE id = $1",
         guild_id
     )
