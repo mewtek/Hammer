@@ -32,16 +32,6 @@ class Admin(commands.Cog):
 
 
     @commands.command()
-    async def kick(self, ctx: commands.Context, user: discord.Member, reason: str = None):
-        if reason is None:
-            await user.kick(f"KICKED BY {ctx.author.id} -- No reason was provided.")
-        else:
-            await user.kick(f"KICKED BY {ctx.author.id} -- {reason}")
-
-        await ctx.message.add_reaction(u"\u2705")
-    
-
-    @commands.command()
     async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None):
         issued_by = ctx.message.author
         issued_to = user.id
@@ -79,10 +69,13 @@ class Admin(commands.Cog):
         if reason is None:
             await backend.db.log_kick(issued_by, issued_to, guild_id)
             await user.kick(reason=f"Kicked by {ctx.message.author.name} -- No reason provided.")
+            await ctx.message.add_reaction(u"\u2705")
             return
         
         await backend.db.log_kick(issued_by, issued_to, guild_id, reason)
         await user.kick(reason = f"Kicked by {user.name} -- {reason}")
+        await ctx.message.add_reaction(u"\u2705")
+
 
     
     @commands.command()
