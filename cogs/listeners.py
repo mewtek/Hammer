@@ -9,8 +9,14 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
+
+        if await backend.db.is_guild_banned(guild.id):
+            await guild.leave()
+            return
+
         print(f"Joined server {guild.name} (ID {guild.id})")
         await backend.db.add_guild_to_database(guild.id, guild.name)
+
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

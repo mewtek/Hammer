@@ -40,6 +40,29 @@ async def add_guild_to_database(guild_id: int, guild_name: str):
 
     print(f"Successfully added {guild_name} ({guild_id}) to database")
 
+
+async def is_guild_banned(guild_id: int) -> bool:
+    """
+    Checks to see if a server is banned in the database.
+
+    Args:
+        guild_id (int): The ID of the server in question.
+
+    Returns:
+        bool: Whether or not the server is banned
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    server = await db.fetchrow("SELECT * FROM banned_guild WHERE guild_id = $1", guild_id)
+    await db.close()
+    
+    if server is not None:
+        return True
+    
+    return False
+
+
 async def add_user_to_database(user_id: int, username: str):
     """
     Adds a user to the user table. Should be ran on issuance of an administrative command (ban, kick, etc.) 
