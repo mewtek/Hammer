@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 class Admin(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
     
 
@@ -40,23 +40,33 @@ class Admin(commands.Cog):
 
         await ctx.message.add_reaction(u"\u2705")
     
+
     @commands.command()
     async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None):
         issued_by = ctx.message.author
         issued_to = user.id
         guild_id = ctx.message.guild.id
 
-        ban = await backend.db.add_ban(issued_by, issued_to, guild_id, reason)
-
-        if ban == False:
-            await ctx.reply(f"Failed to ban {user.name}")
-            return
+        await backend.db.add_ban(issued_by, issued_to, guild_id, reason)
         
         if reason is None:
             await user.ban(reason = f"Banned by {issued_by} -- No reason was provided.")
         else:
             await user.ban(reason = f"Banned by {issued_by} -- {reason}")
 
+        await ctx.message.add_reaction(u"\u2705")
+
+
+    @commands.command()
+    async def unban(self, ctx: commands.Context, user_id: int):
+        user = self.bot.get_user(user_id)
+        process = await backend.db.remove_ban(user_id, ctx.message.guild.id)
+
+        if process == False:
+            ctx.reply(f"{user.name} is not banned!")
+            return
+        
+        await ctx.message.guild.unban(user)
         await ctx.message.add_reaction(u"\u2705")
 
 async def setup(bot):
