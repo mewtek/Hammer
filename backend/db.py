@@ -1,6 +1,5 @@
 """Backend communication between Hammmer and the PostgreSQL database."""
 
-import asyncio
 import asyncpg
 from datetime import datetime
 import os
