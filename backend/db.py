@@ -119,6 +119,37 @@ async def remove_warning(warning_id: int, guild_id: int) -> bool:
     return True
 
 
+async def add_mute(issued_by: int, issued_to: int, guild_id: int, expiration: str):
+    """
+    Adds a mute to the database.
+
+    Args:
+        issued_by (int): The ID of the user that issued the mute
+        issued_to (int): The ID of the user the mute was issued to
+        guild_id (int): The ID of the server the mute was issued in
+        expiration (str): The amount of time the mute is valid for
+    """
+    
+    time_issued = datetime.utcnow()
+    expiration_time = add_time(time_issued, expiration)
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    await db.execute('''INSERT INTO mute(issued, issued_by, issued_to, issued_guild, expiration)
+                        VALUES($1, $2, $3, $4, $5)''', time_issued, issued_by, issued_to, guild_id, 
+                        expiration_time)
+
+
+async def remove_mute(issued_to: int, guild_id: int):
+    """
+    Removes a mute from the database.
+
+    Args:
+        issued_to (int): The ID of the user the mute was issued to
+        guild_id (int): The ID of the server the command originated from
+    """
+
+    pass # TODO
+
 async def add_ban(issued_by: int, issued_to: int, guild_id: int, reason: str = None, expiration: str = None):
     """
     Adds a server ban to the database.
