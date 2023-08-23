@@ -18,5 +18,17 @@ class Admin(commands.Cog):
         await ctx.reply(f"Warned {user.mention} -- ID #{warning}")
 
 
+    @commands.command()
+    async def unwarn(self, ctx: commands.Context, warning_id: int):
+        guild_id = ctx.message.guild.id
+
+        process = await backend.db.remove_warning(warning_id, guild_id)
+
+        if process == False:
+            await ctx.reply(f"Failed to delete warning #{warning_id}.")
+            return
+
+        await ctx.reply(f"Successfully removed warning #{warning_id}!")
+
 async def setup(bot):
     await bot.add_cog(Admin(bot))

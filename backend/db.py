@@ -75,7 +75,7 @@ async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int
         guild_id (int): ID of the Discord server that the warning was issued in
 
     Returns:
-        Int containing the in-database ID of the issued warning.
+        int: The ID of the issued warning
     """
 
     db = await asyncpg.connect(**PSQL_INFO)
@@ -91,3 +91,29 @@ async def add_warning(reason: str, issued_by: int, issued_to: int, guild_id: int
     await db.close()
     
     return id
+
+
+async def remove_warning(warning_id: int, guild_id: int) -> bool:
+    """
+    Removes a warning based on the ID of the entry.
+
+    Args:
+        warning_id (int): The in-database ID of the entry
+        guild_id (int): The ID of the server the command originated from
+
+    Returns:
+        bool: True or False depending on whether or not the removal was successful.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    # Server admins shouldn't be able to remove warnings belonging to other servers
+    entry_guild_id = await db.fetchval('''SELECT issued_guild FROM "warning" WHERE id = $1''', warning_id)
+    if entry_guild_id != guild_id:
+        db.close()
+        return False
+    
+    await db.execute('''DELETE FROM "warning" WHERE id = $1''', warning_id)
+    await db.close()
+
+    return True
