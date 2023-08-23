@@ -1,3 +1,5 @@
+"""Small utilities to make things a little bit cleaner"""
+
 from datetime import datetime, timedelta
 
 def add_time(start_time: datetime, time_to_add: str) -> datetime:

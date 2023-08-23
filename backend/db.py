@@ -2,6 +2,7 @@
 
 import asyncpg
 from datetime import datetime
+from backend.util import add_time
 import os
 
 PSQL_INFO = {
@@ -147,7 +148,9 @@ async def add_ban(issued_by: int, issued_to: int, guild_id: int, reason: str = N
                          issued_by, issued_to, guild_id)    
         await db.execute('''UPDATE ban SET reason = $1 WHERE id = $2''', reason, id)
 
-    # TODO: Add expiration time
+    if expiration is not None:
+        expiration_timestamp = add_time(time_issued, expiration)
+        await db.execute("UPDATE ban SET expiration = $1", expiration_timestamp)
 
     await db.close()
     print(f"{issued_to} was banned from {guild_id}")
