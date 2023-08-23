@@ -150,6 +150,45 @@ async def remove_mute(issued_to: int, guild_id: int):
 
     pass # TODO
 
+
+async def set_muted_role(role_id: int, guild_id: int):
+    """
+    Sets the muted role for a server in the guild_settings table
+
+    Args:
+        role_id (int): The ID of the muted role in the server
+        guild_id (int): The ID of the server in question
+    """
+    
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    await db.execute("UPDATE guild_settings SET muted_role_id = $1 WHERE id = $2",
+                     role_id, guild_id)
+
+
+async def get_muted_role_id(guild_id: int) -> int:
+    """
+    Grabs the muted role id for a server.
+
+    Args:
+        guild_id (int): The ID of the server
+
+    Returns:
+        int: The muted role ID
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+    role_id = await db.fetchvar(
+        "SELECT muted_role_id FROM guild_settings WHERE id = $1",
+        guild_id
+    )
+
+    if role_id is None:
+        return 0
+
+    return role_id
+
+
 async def add_ban(issued_by: int, issued_to: int, guild_id: int, reason: str = None, expiration: str = None):
     """
     Adds a server ban to the database.
@@ -180,8 +219,10 @@ async def add_ban(issued_by: int, issued_to: int, guild_id: int, reason: str = N
         await db.execute('''UPDATE ban SET reason = $1 WHERE id = $2''', reason, id)
 
     if expiration is not None:
+        id = db.fetchval('''SELECT id FROM ban WHERE issued_by = $1 AND issued_to = $2 AND issued_guild = $3''',
+                         issued_by, issued_to, guild_id)   
         expiration_timestamp = add_time(time_issued, expiration)
-        await db.execute("UPDATE ban SET expiration = $1", expiration_timestamp)
+        await db.execute("UPDATE ban SET expiration = $1 WHERE id = $2", expiration_timestamp, id)
 
     await db.close()
     print(f"{issued_to} was banned from {guild_id}")
