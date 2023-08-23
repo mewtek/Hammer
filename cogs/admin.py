@@ -87,8 +87,21 @@ class Admin(commands.Cog):
                     ),
             )
             await backend.db.set_muted_role(muted_role.id, guild.id)
-
             muted_role_id = muted_role.id
+
+            # Permissions for @everyone sometimes override the 
+            # permissions for the muted role.
+            for channel in guild.text_channels:
+                await channel.set_permissions(
+                    muted_role,
+                    send_messages = False
+                )
+
+            for channel in guild.voice_channels:
+                await channel.set_permissions(
+                    muted_role,
+                    speak = False, request_to_speak = False
+                )
 
         muted_role = guild.get_role(muted_role_id)
         await backend.db.add_mute(issued_by, issued_to, guild.id, expiration)
