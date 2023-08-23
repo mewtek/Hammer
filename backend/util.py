@@ -20,7 +20,7 @@ def add_time(start_time: datetime, time_to_add: str) -> datetime:
 
     for t in time:
         unit = t[-1:]
-        amount = t[:-1]
+        amount = int(t[:-1])
 
         if unit == 'y':
             added_time = added_time + timedelta(days=amount * 365)
