@@ -134,9 +134,16 @@ async def add_mute(issued_by: int, issued_to: int, guild_id: int, expiration: st
     expiration_time = add_time(time_issued, expiration)
     db = await asyncpg.connect(**PSQL_INFO)
 
+    existing_mute = await db.fetchval("SELECT id FROM mute WHERE issued_by = $1 AND issued_to = $2 AND issued_guild = $3",
+                                      issued_by, issued_to, guild_id)
+    if existing_mute is not None:
+        return
+
     await db.execute('''INSERT INTO mute(issued, issued_by, issued_to, issued_guild, expiration)
                         VALUES($1, $2, $3, $4, $5)''', time_issued, issued_by, issued_to, guild_id, 
                         expiration_time)
+    
+    await db.close()
 
 
 async def remove_mute(issued_to: int, guild_id: int) -> bool:
