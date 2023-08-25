@@ -19,7 +19,8 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        pass
+        await backend.db.remove_guild(guild.id)
+
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
