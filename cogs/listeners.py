@@ -26,6 +26,8 @@ class Listeners(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
 
+        await backend.db.add_user(member.id, member.name)
+
         if (await backend.db.is_user_muted(member.id, guild.id)):
             muted_role_id = await backend.db.get_muted_role_id(guild.id)
             muted_role = guild.get_role(muted_role_id)
@@ -41,6 +43,7 @@ class Listeners(commands.Cog):
             return
         
         await backend.db.add_user(user.id, user.name)
+        
 
 async def setup(bot):
     await bot.add_cog(Listeners(bot))
