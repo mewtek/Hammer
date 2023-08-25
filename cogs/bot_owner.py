@@ -1,5 +1,6 @@
 import discord
 import backend.db.admin
+from backend.action_msg import MessageType, send_action_message
 from discord.ext import commands
 
 
@@ -21,13 +22,10 @@ class BotOwner(commands.Cog):
         try:
             guild = await self.bot.fetch_guild(guild_id)
 
-            if guild is None:
-                await ctx.reply("Guild does not exist.")
-                return
-            
             await backend.db.admin.add_banned_guild(guild_id)
 
             if guild.name in self.bot.guilds:
+                await send_action_message(MessageType.BANNED_FROM_BOT, self.bot, guild.owner_id, guild.id) 
                 await guild.leave()
 
             await ctx.message.add_reaction(u"\u2705")
