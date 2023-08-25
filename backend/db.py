@@ -41,6 +41,22 @@ async def add_guild(guild_id: int, guild_name: str):
     print(f"Successfully added {guild_name} ({guild_id}) to database")
 
 
+async def remove_guild(guild_id: int):
+    """
+    Purges entries containing the server's id.
+
+    Args:
+        guild_id (int): The ID of the server the bot left.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    await db.execute("DELETE FROM ban WHERE issued_guild = $1", guild_id)
+    await db.execute("DELETE FROM kick WHERE issued_guild = $1", guild_id)
+    await db.execute("DELETE FROM mute WHERE issued_guild = $1", guild_id)
+    await db.execute("DELETE FROM \"warning\" WHERE issued_guild = $1", guild_id)
+
+
 async def is_guild_banned(guild_id: int) -> bool:
     """
     Checks to see if a server is banned in the database.
