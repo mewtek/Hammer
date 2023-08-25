@@ -33,7 +33,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None):
-        issued_by = ctx.message.author
+        issued_by = ctx.message.author.id
         issued_to = user.id
         guild_id = ctx.message.guild.id
 
@@ -77,7 +77,6 @@ class Admin(commands.Cog):
         await ctx.message.add_reaction(u"\u2705")
 
 
-    
     @commands.command()
     async def mute(self, ctx: commands.Context, user: discord.Member, expiration: str):
         issued_by = ctx.message.author.id
