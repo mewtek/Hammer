@@ -54,13 +54,9 @@ async def is_guild_banned(guild_id: int) -> bool:
 
     db = await asyncpg.connect(**PSQL_INFO)
 
-    server = await db.fetchrow("SELECT * FROM banned_guild WHERE guild_id = $1", guild_id)
-    await db.close()
-
-    if server is not None:
-        return True
+    ban_check = await db.fetchval("SELECT banned FROM guild WHERE guild_id = $1", guild_id)
     
-    return False
+    return ban_check
 
 
 async def add_user_to_database(user_id: int, username: str):
