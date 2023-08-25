@@ -1,6 +1,6 @@
 """ Database queries and functions for the owner of the bot """
 import asyncpg
-from backend.db import PSQL_INFO
+from backend.db.clientside import PSQL_INFO
 
 
 async def add_banned_guild(guild_id: int):
