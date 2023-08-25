@@ -430,3 +430,22 @@ async def get_mutes() -> list:
     mutes = await db.fetch("SELECT * from mute")
 
     return mutes
+
+
+async def get_guild_settings(guild_id: int) -> dict:
+    """
+    Gets the settings for a server in the database.
+
+    Args:
+        guild_id (int): The ID of the Discord server
+
+    Returns:
+        dict: The settings of the server.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    settings = await db.fetchrow("SELECT * FROM guild_settings WHERE id = $1", guild_id)
+    await db.close()
+
+    return dict(settings)
