@@ -1,5 +1,5 @@
 import discord
-import backend.db
+import backend.db.clientside
 from discord.ext import commands, tasks
 from datetime import datetime
 
@@ -11,7 +11,7 @@ class BackgroundTasks(commands.Cog):
 
     @tasks.loop(seconds=30.0)
     async def check_ban_expirations(self):
-        bans = await backend.db.get_running_bans()
+        bans = await backend.db.clientside.get_running_bans()
 
         for ban in bans:
             ban = dict(ban)
@@ -24,12 +24,12 @@ class BackgroundTasks(commands.Cog):
                 print(f"{user.name}'s ban expired in {guild.id}")
 
                 await guild.unban(user, reason="Ban period expired.")
-                await backend.db.remove_ban(user.id, guild.id)
+                await backend.db.clientside.remove_ban(user.id, guild.id)
 
 
     @tasks.loop(seconds=30.0)
     async def check_mute_expirations(self):
-        mutes = await backend.db.get_mutes()
+        mutes = await backend.db.clientside.get_mutes()
 
         for mute in mutes:
             mute = dict(mute)
@@ -40,14 +40,14 @@ class BackgroundTasks(commands.Cog):
                 member = guild.get_member(mute['issued_to'])
 
                 if member is None:
-                    await backend.db.remove_mute(member.id, guild.id)
+                    await backend.db.clientside.remove_mute(member.id, guild.id)
                     return
                 
-                muted_role_id = await backend.db.get_muted_role_id(guild.id)
+                muted_role_id = await backend.db.clientside.get_muted_role_id(guild.id)
                 muted_role = guild.get_role(muted_role_id)
 
                 await member.remove_roles(muted_role, reason="Mute period expired.")
-                await backend.db.remove_mute(member.id, guild.id)
+                await backend.db.clientside.remove_mute(member.id, guild.id)
 
 
 async def setup(bot):

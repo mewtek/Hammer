@@ -1,5 +1,5 @@
 import discord
-import backend.db
+import backend.db.clientside
 from discord.ext import commands
 
 

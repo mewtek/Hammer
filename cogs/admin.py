@@ -1,4 +1,4 @@
-import backend.db
+import backend.db.clientside
 import discord
 from discord.ext import commands
 
@@ -13,7 +13,7 @@ class Admin(commands.Cog):
         issued_to = user.id
         guild_id = ctx.message.guild.id
         
-        warning = await backend.db.add_warning(reason, issued_by, issued_to, guild_id)
+        warning = await backend.db.clientside.add_warning(reason, issued_by, issued_to, guild_id)
 
         await ctx.reply(f"Warned {user.mention} -- ID #{warning}")
 
@@ -22,7 +22,7 @@ class Admin(commands.Cog):
     async def unwarn(self, ctx: commands.Context, warning_id: int):
         guild_id = ctx.message.guild.id
 
-        process = await backend.db.remove_warning(warning_id, guild_id)
+        process = await backend.db.clientside.remove_warning(warning_id, guild_id)
 
         if process == False:
             await ctx.reply(f"Failed to delete warning #{warning_id}.")
@@ -37,7 +37,7 @@ class Admin(commands.Cog):
         issued_to = user.id
         guild_id = ctx.message.guild.id
 
-        await backend.db.add_ban(issued_by, issued_to, guild_id, reason)
+        await backend.db.clientside.add_ban(issued_by, issued_to, guild_id, reason)
         
         if reason is None:
             await user.ban(reason = f"Banned by {issued_by} -- No reason was provided.")
@@ -50,7 +50,7 @@ class Admin(commands.Cog):
     @commands.command()
     async def unban(self, ctx: commands.Context, user_id: int):
         user = self.bot.get_user(user_id)
-        process = await backend.db.remove_ban(user_id, ctx.message.guild.id)
+        process = await backend.db.clientside.remove_ban(user_id, ctx.message.guild.id)
 
         if process == False:
             ctx.reply(f"{user.name} is not banned!")
@@ -67,12 +67,12 @@ class Admin(commands.Cog):
         guild_id = ctx.message.guild.id
 
         if reason is None:
-            await backend.db.log_kick(issued_by, issued_to, guild_id)
+            await backend.db.clientside.log_kick(issued_by, issued_to, guild_id)
             await user.kick(reason=f"Kicked by {ctx.message.author.name} -- No reason provided.")
             await ctx.message.add_reaction(u"\u2705")
             return
         
-        await backend.db.log_kick(issued_by, issued_to, guild_id, reason)
+        await backend.db.clientside.log_kick(issued_by, issued_to, guild_id, reason)
         await user.kick(reason = f"Kicked by {user.name} -- {reason}")
         await ctx.message.add_reaction(u"\u2705")
 
@@ -82,7 +82,7 @@ class Admin(commands.Cog):
         issued_by = ctx.message.author.id
         issued_to = user.id
         guild = ctx.message.guild
-        muted_role_id = await backend.db.get_muted_role_id(guild.id)
+        muted_role_id = await backend.db.clientside.get_muted_role_id(guild.id)
 
         if muted_role_id == 0:
             msg = await ctx.message("No muted role found, creating one..")
@@ -94,7 +94,7 @@ class Admin(commands.Cog):
                     speak = False
                     ),
             )
-            await backend.db.set_muted_role(muted_role.id, guild.id)
+            await backend.db.clientside.set_muted_role(muted_role.id, guild.id)
             muted_role_id = muted_role.id
 
             # Permissions for @everyone sometimes override the 
@@ -114,7 +114,7 @@ class Admin(commands.Cog):
             await msg.delete()
 
         muted_role = guild.get_role(muted_role_id)
-        await backend.db.add_mute(issued_by, issued_to, guild.id, expiration)
+        await backend.db.clientside.add_mute(issued_by, issued_to, guild.id, expiration)
         await user.add_roles(muted_role, reason=f"Muted by {ctx.message.author.id} for {expiration}")
         await ctx.message.add_reaction(u"\u2705")
 
@@ -123,9 +123,9 @@ class Admin(commands.Cog):
     async def unmute(self, ctx: commands.Context, user: discord.Member):
         issued_to = user.id
         guild_id = ctx.message.guild.id
-        muted_role_id = await backend.db.get_muted_role_id(guild_id)
+        muted_role_id = await backend.db.clientside.get_muted_role_id(guild_id)
         muted_role = ctx.guild.get_role(muted_role_id)
-        process = await backend.db.remove_mute(issued_to, guild_id)
+        process = await backend.db.clientside.remove_mute(issued_to, guild_id)
 
         if process == False:
             await ctx.reply(f"{user.name} isn't muted.")

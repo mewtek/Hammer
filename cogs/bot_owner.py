@@ -1,5 +1,5 @@
 import discord
-import backend.db_admin
+import backend.db.admin
 from discord.ext import commands
 
 
@@ -25,7 +25,7 @@ class BotOwner(commands.Cog):
                 await ctx.reply("Guild does not exist.")
                 return
             
-            await backend.db_admin.add_banned_guild(guild_id)
+            await backend.db.admin.add_banned_guild(guild_id)
 
             if guild.name in self.bot.guilds:
                 await guild.leave()
