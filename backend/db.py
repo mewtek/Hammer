@@ -75,6 +75,23 @@ async def is_guild_banned(guild_id: int) -> bool:
     return ban_check
 
 
+async def get_guild_settings(guild_id: int) -> dict:
+    """
+    Gets the settings for a server.
+
+    Args:
+        guild_id (int): The ID of the server.
+
+    Returns:
+        dict: The server's settings.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+    settings = await db.fetch("SELECT * FROM guild_settings WHERE id = $1", guild_id)
+    await db.close()
+
+    return dict(settings)
+
 async def add_user(user_id: int, username: str):
     """
     Adds a user to the user table. Should be ran on issuance of an administrative command (ban, kick, etc.) 
