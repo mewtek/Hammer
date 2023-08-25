@@ -9,6 +9,7 @@
 
 # Python Cache
 */__pycache__
+*/*/__pycache__
 
 # Diesel CLI generated files
 migrations/.keep
