@@ -15,8 +15,11 @@ class Listeners(commands.Cog):
             return
 
         print(f"Joined server {guild.name} (ID {guild.id})")
-        await backend.db.add_guild_to_database(guild.id, guild.name)
+        await backend.db.add_guild(guild.id, guild.name)
 
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        pass
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -25,7 +28,7 @@ class Listeners(commands.Cog):
         if user.id == self.bot.user.id:
             return
         
-        await backend.db.add_user_to_database(user.id, user.name)
+        await backend.db.add_user(user.id, user.name)
 
 async def setup(bot):
     await bot.add_cog(Listeners(bot))

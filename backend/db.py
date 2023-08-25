@@ -13,7 +13,7 @@ PSQL_INFO = {
     'password': os.getenv('PSQL_PASSWD')
 }
 
-async def add_guild_to_database(guild_id: int, guild_name: str):
+async def add_guild(guild_id: int, guild_name: str):
     """
     Creates an entry for a Discord server, as well as an entry for its settings.
     Typically ran when the bot joins a new server.
@@ -59,7 +59,7 @@ async def is_guild_banned(guild_id: int) -> bool:
     return ban_check
 
 
-async def add_user_to_database(user_id: int, username: str):
+async def add_user(user_id: int, username: str):
     """
     Adds a user to the user table. Should be ran on issuance of an administrative command (ban, kick, etc.) 
 
