@@ -38,12 +38,13 @@ class BackgroundTasks(commands.Cog):
             if time_since_mute.total_seconds() >= 0:
                 guild = await self.bot.fetch_guild(mute['issued_guild'])
                 member = guild.get_member(mute['issued_to'])
-                muted_role_id = await backend.db.get_muted_role_id(guild.id)
-                muted_role = guild.get_role(muted_role_id)
 
                 if member is None:
                     return
                 
+                muted_role_id = await backend.db.get_muted_role_id(guild.id)
+                muted_role = guild.get_role(muted_role_id)
+
                 await member.remove_roles(muted_role, reason="Mute period expired.")
                 await backend.db.remove_mute(member.id, guild.id)
 
