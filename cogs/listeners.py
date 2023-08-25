@@ -23,6 +23,17 @@ class Listeners(commands.Cog):
 
 
     @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        guild = member.guild
+
+        if (await backend.db.is_user_muted(member.id, guild.id)):
+            muted_role_id = await backend.db.get_muted_role_id(guild.id)
+            muted_role = guild.get_role(muted_role_id)
+
+            await member.add_roles(muted_role, reason="User was muted prior to joining the server.")
+
+
+    @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         user = message.author
 
