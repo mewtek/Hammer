@@ -410,6 +410,6 @@ async def get_mutes() -> list:
 
     db = await asyncpg.connect(**PSQL_INFO)
 
-    mutes = await db.fetch("SELF * from mute")
+    mutes = await db.fetch("SELECT * from mute")
 
     return mutes
