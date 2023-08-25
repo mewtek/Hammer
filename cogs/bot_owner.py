@@ -26,6 +26,10 @@ class BotOwner(commands.Cog):
                 return
             
             await backend.db_admin.add_banned_guild(guild_id)
+
+            if guild.name in self.bot.guilds:
+                await guild.leave()
+
             await ctx.message.add_reaction(u"\u2705")
 
         except discord.errors.NotFound:
