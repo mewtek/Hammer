@@ -324,3 +324,21 @@ async def log_kick(issued_by: int, issued_to: int, guild_id: int, reason: str = 
         await db.execute("UPDATE kick SET reason = $1 WHERE id = $2", reason, id)
 
     await db.close()
+
+
+async def get_running_bans() -> list:
+    """
+    Gets the currently expirable bans. Ignores any bans
+    that have the default value.
+
+    Returns:
+        list: asyncpg record objects, can be converted into dictionaries.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    bans = await db.fetch("SELECT * FROM ban WHERE expiration != '2269-01-01 00:00:00'::timestamp without time zone")
+
+    return bans
+
+
