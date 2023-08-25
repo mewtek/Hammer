@@ -40,6 +40,7 @@ class BackgroundTasks(commands.Cog):
                 member = guild.get_member(mute['issued_to'])
 
                 if member is None:
+                    await backend.db.remove_mute(member.id, guild.id)
                     return
                 
                 muted_role_id = await backend.db.get_muted_role_id(guild.id)
