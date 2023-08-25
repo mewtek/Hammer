@@ -1,6 +1,7 @@
 import backend.db.clientside
 import discord
 from discord.ext import commands
+from backend.action_msg import send_action_message, MessageType
 
 class Admin(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -14,7 +15,7 @@ class Admin(commands.Cog):
         guild_id = ctx.message.guild.id
         
         warning = await backend.db.clientside.add_warning(reason, issued_by, issued_to, guild_id)
-
+        await send_action_message(MessageType.MUTE, self.bot, issued_to, guild_id, issued_by, reason = reason)
         await ctx.reply(f"Warned {user.mention} -- ID #{warning}")
 
 
@@ -32,13 +33,15 @@ class Admin(commands.Cog):
 
 
     @commands.command()
-    async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None):
+    async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None, expiration: str = None):
         issued_by = ctx.message.author.id
         issued_to = user.id
         guild_id = ctx.message.guild.id
 
-        await backend.db.clientside.add_ban(issued_by, issued_to, guild_id, reason)
+        await backend.db.clientside.add_ban(issued_by, issued_to, guild_id, reason, expiration)
         
+        await send_action_message(MessageType.BAN, self.bot, issued_to, guild_id, issued_by, expiration, reason)
+
         if reason is None:
             await user.ban(reason = f"Banned by {issued_by} -- No reason was provided.")
         else:
@@ -65,6 +68,8 @@ class Admin(commands.Cog):
         issued_by = ctx.message.author.id
         issued_to = user.id
         guild_id = ctx.message.guild.id
+
+        await send_action_message(MessageType.KICK, self.bot, issued_to, guild_id, issued_by, None, reason)
 
         if reason is None:
             await backend.db.clientside.log_kick(issued_by, issued_to, guild_id)
@@ -115,7 +120,9 @@ class Admin(commands.Cog):
 
         muted_role = guild.get_role(muted_role_id)
         await backend.db.clientside.add_mute(issued_by, issued_to, guild.id, expiration)
+        await send_action_message(MessageType.MUTE, self.bot, issued_to, guild.id, issued_by, expiration)
         await user.add_roles(muted_role, reason=f"Muted by {ctx.message.author.id} for {expiration}")
+
         await ctx.message.add_reaction(u"\u2705")
 
 
