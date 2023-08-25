@@ -342,3 +342,16 @@ async def get_running_bans() -> list:
     return bans
 
 
+async def get_mutes() -> list:
+    """
+    Gets all current mutes.
+
+    Returns:
+        list: asyncpg record objects, can be converted into dictionaries.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+
+    mutes = await db.fetch("SELF * from mute")
+
+    return mutes
