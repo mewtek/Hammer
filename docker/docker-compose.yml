@@ -1,0 +1,57 @@
+version: '3.3'
+
+networks:
+  hammer:
+    driver: 'bridge'
+    external: true
+
+services:
+  hammer:
+    container_name: hammer-main
+    image: mewtek/hammer
+    restart: unless-stopped
+
+    environment:
+      - BOT_TOKEN=REPLACE_ME    # discord.com/developers
+      - PSQL_ADDR=db
+      - PSQL_PORT=5432
+      - PSQL_DB=hammer
+      - PSQL_USER=hammer
+      - PSQL_PASSWD=hammer
+
+    networks:
+      - hammer
+
+    depends_on:
+      - db
+
+  db:
+    container_name: hammer-db
+    image: postgres:15-alpine
+    restart: unless-stopped
+
+    environment:
+      - POSTGRES_USER=hammer
+      - POSTGRES_PASSWORD=hammer
+      - POSTGRES_USER=hammer
+
+    networks:
+      - hammer
+
+
+  # Optional: pgadmin4 for a web ui to see/manage the database
+  # pgadmin:
+  #   container_name: hammer-pgadmin
+  #   image: dpage/pgadmin4:latest
+  #   restart: unless-stopped
+
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+  #     - PGADMIN_DEFUALT_PASSWORD=admin
+    
+  #   ports:
+  #     - "80:80"
+  #     # - "443:443"
+
+  #   networks:
+  #     - hammer
