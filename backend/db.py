@@ -154,6 +154,30 @@ async def remove_warning(warning_id: int, guild_id: int) -> bool:
     return True
 
 
+async def is_user_muted(user_id: int, guild_id: int) -> bool:
+    """
+    Checks if a user is muted in the database.
+
+    Args:
+        user_id (int): The ID of the user in question
+        guild_id (int): The ID of the server in question
+
+    Returns:
+        bool: Whether or not the user is muted.
+    """
+
+    db = await asyncpg.connect(**PSQL_INFO)
+    row = await db.fetchrow("SELECT * FROM mute WHERE issued_to = $1 AND issued_guild = $2",
+                      user_id, guild_id)
+    
+    if row is None:
+        await db.close()
+        return False
+    
+    await db.close()
+    return True
+
+
 async def add_mute(issued_by: int, issued_to: int, guild_id: int, expiration: str):
     """
     Adds a mute to the database.
@@ -169,9 +193,7 @@ async def add_mute(issued_by: int, issued_to: int, guild_id: int, expiration: st
     expiration_time = add_time(time_issued, expiration)
     db = await asyncpg.connect(**PSQL_INFO)
 
-    existing_mute = await db.fetchval("SELECT id FROM mute WHERE issued_by = $1 AND issued_to = $2 AND issued_guild = $3",
-                                      issued_by, issued_to, guild_id)
-    if existing_mute is not None:
+    if (await is_user_muted(issued_to, guild_id)):
         return
 
     await db.execute('''INSERT INTO mute(issued, issued_by, issued_to, issued_guild, expiration)
@@ -195,12 +217,12 @@ async def remove_mute(issued_to: int, guild_id: int) -> bool:
 
     db = await asyncpg.connect(**PSQL_INFO)
 
-    id = await db.fetchval("SELECT id FROM mute WHERE issued_to = $1 AND issued_guild = $2",
-                                issued_to, guild_id)
-    
-    if id is None:
+    if (await is_user_muted(issued_to, guild_id) == False):
         await db.close()
         return False
+
+    id = await db.fetchval("SELECT id FROM mute WHERE issued_to = $1 AND issued_guild = $2",
+                            issued_to, guild_id)
     
     await db.execute("DELETE FROM mute WHERE id = $1", id)
     await db.close()
