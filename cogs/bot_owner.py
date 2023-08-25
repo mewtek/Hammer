@@ -18,14 +18,19 @@ class BotOwner(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def ban_guild(self, ctx: commands.Context, guild_id: int):
-        guild = await self.bot.fetch_guild(guild_id)
+        try:
+            guild = await self.bot.fetch_guild(guild_id)
 
-        if guild is None:
-            await ctx.reply("Guild does not exist.")
-            return
-        
-        await backend.db_admin.add_banned_guild(guild_id)
-        await ctx.message.add_reaction(u"\u2705")
+            if guild is None:
+                await ctx.reply("Guild does not exist.")
+                return
+            
+            await backend.db_admin.add_banned_guild(guild_id)
+            await ctx.message.add_reaction(u"\u2705")
+
+        except discord.errors.NotFound:
+            await ctx.reply("Guild not found.")
+
 
 async def setup(bot):
     await bot.add_cog(BotOwner(bot))
