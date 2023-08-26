@@ -10,6 +10,7 @@ class Admin(commands.Cog):
     
 
     @commands.command()
+    @commands.has_permissions(moderate_members = True)
     async def warn(self, ctx: commands.Context, user: discord.Member, reason: str):
         issued_by = ctx.message.author.id
         issued_to = user.id
@@ -22,6 +23,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(moderate_members = True)
     async def unwarn(self, ctx: commands.Context, warning_id: int):
         guild_id = ctx.message.guild.id
 
@@ -35,6 +37,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(ban_members = True)
     async def ban(self, ctx: commands.Context, user: discord.Member, reason: str = None, expiration: str = None):
         issued_by = ctx.message.author.id
         issued_to = user.id
@@ -53,6 +56,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(ban_members = True)
     async def unban(self, ctx: commands.Context, user_id: int):
         user = self.bot.get_user(user_id)
         process = await backend.db.clientside.remove_ban(user_id, ctx.message.guild.id)
@@ -66,6 +70,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(kick_members = True)
     async def kick(self, ctx: commands.Context, user: discord.Member, reason: str = None):
         issued_by = ctx.message.author.id
         issued_to = user.id
@@ -87,6 +92,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(moderate_members = True)
     async def mute(self, ctx: commands.Context, user: discord.Member, expiration: str):
         issued_by = ctx.message.author.id
         issued_to = user.id
@@ -132,6 +138,7 @@ class Admin(commands.Cog):
 
 
     @commands.command()
+    @commands.has_permissions(moderate_members = True)
     async def unmute(self, ctx: commands.Context, user: discord.Member):
         issued_to = user.id
         guild_id = ctx.message.guild.id
