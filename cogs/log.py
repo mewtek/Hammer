@@ -35,7 +35,7 @@ class ServerLogging(commands.Cog):
             return
         
         log_channel = self.bot.get_channel(settings['log_channel'])
-        embed=discord.Embed(title=f"Message edited in #{before.channel.name}", description=f"Deleted <t:{timestamp}:R>", color=0xfcba03)
+        embed=discord.Embed(title=f"Message edited in #{before.channel.name}", description=f"Edited <t:{timestamp}:R>", color=0xfcba03)
         embed.set_author(name=f"{before.author.name}", icon_url=before.author.avatar.url)
         embed.add_field(name="Before", value=before.content, inline=False)
         embed.add_field(name="After", value=after.content, inline=False)
