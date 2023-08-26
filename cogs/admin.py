@@ -1,4 +1,5 @@
 import backend.db.clientside
+import backend.logging
 import discord
 from discord.ext import commands
 from backend.action_msg import send_action_message, MessageType
@@ -15,6 +16,7 @@ class Admin(commands.Cog):
         guild_id = ctx.message.guild.id
         
         warning = await backend.db.clientside.add_warning(reason, issued_by, issued_to, guild_id)
+        await backend.logging.log_warn(self.bot, ctx.message.guild, user, ctx.message.author, reason)
         await send_action_message(MessageType.WARN, self.bot, issued_to, guild_id, issued_by, reason = reason)
         await ctx.reply(f"Warned {user.mention} -- ID #{warning}")
 
@@ -73,11 +75,13 @@ class Admin(commands.Cog):
 
         if reason is None:
             await backend.db.clientside.log_kick(issued_by, issued_to, guild_id)
+            await backend.logging.log_kick(self.bot, ctx.guild, user, ctx.message.author)
             await user.kick(reason=f"Kicked by {ctx.message.author.name} -- No reason provided.")
             await ctx.message.add_reaction(u"\u2705")
             return
         
         await backend.db.clientside.log_kick(issued_by, issued_to, guild_id, reason)
+        await backend.logging.log_kick(self.bot, ctx.guild, user, ctx.message.author, reason)
         await user.kick(reason = f"Kicked by {user.name} -- {reason}")
         await ctx.message.add_reaction(u"\u2705")
 
@@ -120,6 +124,7 @@ class Admin(commands.Cog):
 
         muted_role = guild.get_role(muted_role_id)
         await backend.db.clientside.add_mute(issued_by, issued_to, guild.id, expiration)
+        await backend.logging.log_mute(self.bot, guild, user, ctx.message.author, expiration)
         await send_action_message(MessageType.MUTE, self.bot, issued_to, guild.id, issued_by, expiration)
         await user.add_roles(muted_role, reason=f"Muted by {ctx.message.author.id} for {expiration}")
 
