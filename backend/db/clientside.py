@@ -389,8 +389,8 @@ async def log_kick(issued_by: int, issued_to: int, guild_id: int, reason: str = 
     time_issued = datetime.utcnow()
     db = await asyncpg.connect(**PSQL_INFO)
 
-    await db.execute('''INSERT INTO kick(issued, issued_by, issued_to, issued_guild),
-                     VALUES($1, $2, $3, $4)''', time_issued, issued_by, issued_to, guild_id)
+    await db.execute('''INSERT INTO kick(issued, issued_by, issued_to, issued_guild)
+                    VALUES($1, $2, $3, $4)''', time_issued, issued_by, issued_to, guild_id)
     
     if reason is not None:
         id = await db.fetchval('''SELECT id FROM kick WHERE
