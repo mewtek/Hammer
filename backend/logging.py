@@ -73,7 +73,8 @@ async def log_user_join(bot: commands.Bot, user: discord.Member):
     joined_timestamp = floor(datetime.timestamp(user.joined_at))
     log_channel = bot.get_channel(settings['log_channel'])
     
-    embed = discord.Embed(title=f"New member: {user.name}" if not user.bot else f"New Bot: {user.name} \U0001F916")
+    embed = discord.Embed(title=f"New member: {user.name}" if not user.bot else f"New Bot: {user.name} \U0001F916",
+                          color=user.color)
     embed.set_thumbnail(url=user.display_avatar.url)
     embed.add_field(name="Account Created", value=f"<t:{acc_created_timestamp}:R>", inline=False)
     embed.add_field(name="Joined", value=f"<t:{joined_timestamp}:R>", inline=False)
