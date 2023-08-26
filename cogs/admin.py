@@ -15,7 +15,7 @@ class Admin(commands.Cog):
         guild_id = ctx.message.guild.id
         
         warning = await backend.db.clientside.add_warning(reason, issued_by, issued_to, guild_id)
-        await send_action_message(MessageType.MUTE, self.bot, issued_to, guild_id, issued_by, reason = reason)
+        await send_action_message(MessageType.WARN, self.bot, issued_to, guild_id, issued_by, reason = reason)
         await ctx.reply(f"Warned {user.mention} -- ID #{warning}")
 
 
