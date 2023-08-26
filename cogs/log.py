@@ -13,6 +13,9 @@ class ServerLogging(commands.Cog):
         date = datetime.utcnow()
         timestamp = calendar.timegm(date.utctimetuple())
         settings = await get_guild_settings(message.guild.id)
+        
+        if message.author.id == self.bot.user.id:
+            return
 
         if not settings['logging']:
             return
@@ -30,6 +33,9 @@ class ServerLogging(commands.Cog):
         date = datetime.utcnow()
         timestamp = calendar.timegm(date.utctimetuple())
         settings = await get_guild_settings(before.guild.id)
+
+        if before.author.id == self.bot.user.id:
+            return
 
         if not settings['logging']:
             return
