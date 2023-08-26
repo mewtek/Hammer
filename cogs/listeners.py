@@ -1,4 +1,5 @@
 import backend.db.clientside
+from backend.logging import log_user_join
 import discord
 
 from discord.ext import commands
@@ -34,6 +35,8 @@ class Listeners(commands.Cog):
 
             await member.add_roles(muted_role, reason="User was muted prior to joining the server.")
 
+        await log_user_join(self.bot, member)
+
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -43,7 +46,7 @@ class Listeners(commands.Cog):
             return
         
         await backend.db.clientside.add_user(user.id, user.name)
-        
+
 
 async def setup(bot):
     await bot.add_cog(Listeners(bot))
