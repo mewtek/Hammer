@@ -45,39 +45,41 @@ async def send_action_message(messageType: MessageType, bot: commands.Bot, user_
 
     if not settings['dm_users_on_action']:
         return
-    
-    if messageType == MessageType.BAN:
-        issued_by = await bot.fetch_user(issued_by_id)
-        embed = discord.Embed(title=f"Banned from {guild.name}", color=0xfe3939)
-        embed.add_field(name="Banned by:", value=issued_by.name)
-        embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
-        embed.add_field(name="Length:", value="Permanent" if length is None else length)
-        embed.set_footer(text="This message is automated. Please do not contact bot support to be unbanned from this server.")
+    try:
+        if messageType == MessageType.BAN:
+            issued_by = await bot.fetch_user(issued_by_id)
+            embed = discord.Embed(title=f"Banned from {guild.name}", color=0xfe3939)
+            embed.add_field(name="Banned by:", value=issued_by.name)
+            embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
+            embed.add_field(name="Length:", value="Permanent" if length is None else length)
+            embed.set_footer(text="This message is automated. Please do not contact bot support to be unbanned from this server.")
 
-        await user.send(embed=embed)
+            await user.send(embed=embed)
 
-    elif messageType == MessageType.KICK:
-        issued_by = await bot.fetch_user(issued_by_id)
-        embed = discord.Embed(title=f"Kicked from {guild.name}", color=0xfeac39)
-        embed.add_field(name="Kicked by:", value=issued_by.name)
-        embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
-        embed.add_field(name="Length:", value="Permanent" if length is None else length)
-        embed.set_footer(text="This message is automated.")
+        elif messageType == MessageType.KICK:
+            issued_by = await bot.fetch_user(issued_by_id)
+            embed = discord.Embed(title=f"Kicked from {guild.name}", color=0xfeac39)
+            embed.add_field(name="Kicked by:", value=issued_by.name)
+            embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
+            embed.add_field(name="Length:", value="Permanent" if length is None else length)
+            embed.set_footer(text="This message is automated.")
 
-        await user.send(embed=embed)
+            await user.send(embed=embed)
 
-    elif messageType == MessageType.MUTE:
-        issued_by = await bot.fetch_user(issued_by_id)
-        embed = discord.Embed(title=f"Muted in {guild.name}", color=0xfeac39)
-        embed.add_field(name="Muted by:", value=issued_by.name)
-        embed.add_field(name="Length:", value=length)
-        embed.set_footer(text="This message is automated. Please do not contact bot support to be unmuted in this server.")
+        elif messageType == MessageType.MUTE:
+            issued_by = await bot.fetch_user(issued_by_id)
+            embed = discord.Embed(title=f"Muted in {guild.name}", color=0xfeac39)
+            embed.add_field(name="Muted by:", value=issued_by.name)
+            embed.add_field(name="Length:", value=length)
+            embed.set_footer(text="This message is automated. Please do not contact bot support to be unmuted in this server.")
 
-        await user.send(embed=embed)
+            await user.send(embed=embed)
 
-    elif messageType == MessageType.WARN:
-        embed = discord.Embed(title=f"Warned in {guild.name}", color=0xfef739)
-        embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
-        embed.set_footer(text="This message is automated.")
+        elif messageType == MessageType.WARN:
+            embed = discord.Embed(title=f"Warned in {guild.name}", color=0xfef739)
+            embed.add_field(name="Reason:", value="Not Stated" if reason is None else reason)
+            embed.set_footer(text="This message is automated.")
 
-        await user.send(embed=embed)
+            await user.send(embed=embed)
+    except:
+        pass
