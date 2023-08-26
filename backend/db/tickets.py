@@ -2,7 +2,6 @@
 import asyncio
 import asyncpg
 from backend.db.clientside import PSQL_INFO
-from backend.db.clientside import get_guild_settings
 
 async def create_ticket(guild_id: int, user_id: int, channel: int) -> int:
     """
@@ -29,16 +28,16 @@ async def create_ticket(guild_id: int, user_id: int, channel: int) -> int:
     return id
 
 
-async def accept_ticket(ticket_id: int, claimaint_id: int):
+async def accept_ticket(ticket_id: int, claimed_by_id: int):
     """
-    Sets a claimaint to anyone who accepts the ticket.
+    Sets claimed_by to anyone who accepts the ticket.
 
     Args:
         ticket_id (int): The ID of the ticket
-        claimaint_id (int): The ID of the user that accepted the ticket
+        claimed_by_id (int): The ID of the user that accepted the ticket
     """
 
     db = await asyncpg.connect(**PSQL_INFO)
-    await db.execute("UPDATE ticket SET claimant = $1 WHERE id = $2", claimaint_id, ticket_id)
+    await db.execute("UPDATE ticket SET claimed_by = $1 WHERE id = $2", claimed_by_id, ticket_id)
 
     await db.close()

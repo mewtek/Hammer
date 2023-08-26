@@ -89,9 +89,9 @@ CREATE TABLE ticket
     ticket_guild bigint NOT NULL,
     ticket_channel_id bigint NOT NULL,
     user bigint NOT NULL,
-    claimaint bigint,
+    claimed_by bigint,
 
     CONSTRAINT ticket_guild_foreign FOREIGN KEY(ticket_guild) REFERENCES guild(id),
     CONSTRAINT ticket_user_foreign FOREIGN KEY(user) REFERENCES "user"(id),
-    CONSTRAINT claimaint_foreign FOREIGN KEY(claimaint) REFERENCES "user"(id)
+    CONSTRAINT claimed_by_foreign FOREIGN KEY(claimed_by) REFERENCES "user"(id)
 );
