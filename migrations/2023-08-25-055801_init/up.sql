@@ -82,4 +82,16 @@ CREATE TABLE ban
     CONSTRAINT ban_issued_to_foreign FOREIGN KEY(issued_to) REFERENCES "user"(id),
     CONSTRAINT ban_issued_guild_foreign FOREIGN KEY(issued_guild) REFERENCES guild(id)
 );
+
+CREATE TABLE ticket
+(
+    id serial PRIMARY KEY,
+    ticket_guild bigint NOT NULL,
+    ticket_channel_id bigint NOT NULL,
+    user bigint NOT NULL,
+    claimaint bigint,
+
+    CONSTRAINT ticket_guild_foreign FOREIGN KEY(ticket_guild) REFERENCES guild(id),
+    CONSTRAINT ticket_user_foreign FOREIGN KEY(user) REFERENCES "user"(id),
+    CONSTRAINT claimaint_foreign FOREIGN KEY(claimaint) REFERENCES "user"(id)
 );
