@@ -18,7 +18,7 @@ async def log_kick(bot: commands.Bot, guild: discord.Guild, issued_to: discord.M
     log_channel = bot.get_channel(settings['log_channel'])
 
     embed=discord.Embed(title=f"User was kicked.", description=f"Kicked <t:{timestamp}:R>", color=0xfcba03)
-    embed.set_author(name=issued_to.name, icon_url=issued_to.avatar.url)
+    embed.set_author(name=issued_to.name, icon_url=issued_to.display_avatar.url)
     embed.add_field(name="Kicked by", value=issued_by.name)
     if reason is not None:
         embed.add_field(name="Reason", value=reason)
@@ -37,7 +37,7 @@ async def log_mute(bot: commands.Bot, guild: discord.Guild, issued_to: discord.M
     log_channel = bot.get_channel(settings['log_channel'])
 
     embed=discord.Embed(title=f"User was muted.", description=f"Muted <t:{timestamp}:R>", color=0xfcba03)
-    embed.set_author(name=issued_to.name, icon_url=issued_to.avatar.url)
+    embed.set_author(name=issued_to.name, icon_url=issued_to.display_avatar.url)
     embed.add_field(name="Muted by", value=issued_by.name, inline=False)
     embed.add_field(name="Duration", value=length)
 
@@ -56,7 +56,7 @@ async def log_warn(bot: commands.Bot, guild: discord.Guild, issued_to: discord.M
     log_channel = bot.get_channel(settings['log_channel'])
 
     embed=discord.Embed(title=f"User was warned.", description=f"Warned <t:{timestamp}:R>", color=0xfcba03)
-    embed.set_author(name=issued_to.name, icon_url=issued_to.avatar.url)
+    embed.set_author(name=issued_to.name, icon_url=issued_to.display_avatar.url)
     embed.add_field(name="Warned by", value=issued_by.name, inline=False)
     embed.add_field(name="Reason", value=reason, inline=False)
 
